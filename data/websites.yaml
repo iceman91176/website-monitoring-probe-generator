@@ -1,0 +1,18 @@
+globals:
+  monitoringInstance: k8s01
+  team: devops-team
+  proberUrl: prometheus-blackbox-exporter.witcom-operations:9115
+  module: http_ssl_2xx
+  interval: 60s
+websites:
+  - job: witcom-exchange
+    #overrides globals.module
+    module: a-funny-module
+    #needed if there are multiple instances for the same job, eg. two exchange-servers
+    instance: wit-ex01-12r2
+    targets:
+      - url1
+      - url2
+  - job: witcom-iam
+    targets:
+      - https://auth.witcom.services

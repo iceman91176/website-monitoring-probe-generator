@@ -1,0 +1,63 @@
+apiVersion: v1
+items:
+- apiVersion: monitoring.coreos.com/v1
+  kind: Probe
+  metadata:
+    labels:
+      app.kubernetes.io/monitoring-instance: k8s01
+      probe: website
+    name: web-witcom-exchange-wit-ex01-12r2
+  spec:
+    interval: 60s
+    module: a-funny-module
+    prober:
+      url: prometheus-blackbox-exporter.witcom-operations:9115
+    targets:
+      staticConfig:
+        labels:
+          job: witcom-exchange
+          team: devops-team
+          probe: website
+        static:
+        - url1
+        - url2
+        relabelingConfigs:
+        - targetLabel: instance
+          replacement: wit-ex01-12r2
+        - sourceLabels:
+          - __param_target
+          targetLabel: target
+        - regex: namespace
+          action: labeldrop
+- apiVersion: monitoring.coreos.com/v1
+  kind: Probe
+  metadata:
+    labels:
+      app.kubernetes.io/monitoring-instance: k8s01
+      probe: website
+    name: web-witcom-iam
+  spec:
+    interval: 60s
+    module: http_ssl_2xx
+    prober:
+      url: prometheus-blackbox-exporter.witcom-operations:9115
+    targets:
+      staticConfig:
+        labels:
+          job: witcom-iam
+          team: devops-team
+          probe: website
+        static:
+        - https://auth.witcom.services
+        relabelingConfigs:
+        - targetLabel: instance
+          replacement: witcom-iam
+        - sourceLabels:
+          - __param_target
+          targetLabel: target
+        - regex: namespace
+          action: labeldrop
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

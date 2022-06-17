@@ -1,0 +1,45 @@
+apiVersion: v1
+items:
+{%- for probe in websites %}
+{%- if probe.instance -%}
+  {%- set probeName = "web-" + probe.job + "-" + probe.instance -%}
+  {%- set instanceName = probe.instance -%}
+{%- else -%}
+  {%- set probeName = "web-" + probe.job -%}
+  {%- set instanceName = probe.job -%}
+{%- endif %}
+- apiVersion: monitoring.coreos.com/v1
+  kind: Probe
+  metadata:
+    labels:
+      app.kubernetes.io/monitoring-instance: {{ globals.monitoringInstance }}
+      probe: website
+    name: {{ probeName }}
+  spec:
+    interval: 60s
+    module: {{ probe.module | default(globals.module) }}
+    prober:
+      url: {{ globals.proberUrl }}
+    targets:
+      staticConfig:
+        labels:
+          job: {{probe.job}}
+          team: {{probe.team | default(globals.team) }}
+          probe: website
+        static:
+        {%- for target in probe.targets | default([]) %}
+        - {{ target }}
+        {%- endfor %}
+        relabelingConfigs:
+        - targetLabel: instance
+          replacement: {{instanceName}}
+        - sourceLabels:
+          - __param_target
+          targetLabel: target
+        - regex: namespace
+          action: labeldrop
+{%- endfor %}
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
