@@ -1,6 +1,8 @@
 globals:
   monitoringInstance: k8s01
   team: devops-team
+  proberResourceName: generic-website-prober
+  proberId: an-external-prober
   proberUrl: prometheus-blackbox-exporter.witcom-operations:9115
   module: http_ssl_2xx
   interval: 60s

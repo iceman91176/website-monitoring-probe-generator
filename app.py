@@ -19,12 +19,14 @@ def get_globals():
     default_globals["team"] = get_global("team","TEAM")
     default_globals["proberUrl"] = get_global("proberUrl","PROBER_URL")
     default_globals["module"] = get_global("module","MODULE")
+    default_globals["proberId"] = get_global("proberId","PROBER_ID")
+    default_globals["proberResourceName"] = get_global("proberResourceName","PROBER_RESOURCE_NAME")
 
     return default_globals
 
 def main():
     '''Render configuration'''
-    template_file = Path("./templates/probes.j2")
+    template_file = Path("./templates/probe.j2")
     variables_file = Path("./data/websites.yaml")
 
     if variables_file.suffix in [".yml", ".yaml"]:
@@ -51,6 +53,13 @@ def main():
     if 'proberUrl' not in data["globals"]:
         data["globals"]["proberUrl"] = \
           get_global("proberUrl","PROBER_URL")
+    if 'proberId' not in data["globals"]:
+        data["globals"]["proberId"] = \
+          get_global("proberId","PROBER_ID")
+    if 'proberResourceName' not in data["globals"]:
+        data["globals"]["proberResourceName"] = \
+          get_global("proberResourceName","PROBER_RESOURCE_NAME")
+
     if 'module' not in data["globals"]:
         data["globals"]["module"] = \
           get_global("module","MODULE")

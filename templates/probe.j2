@@ -2,13 +2,13 @@ apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
   labels:
-    app.kubernetes.io/monitoring-instance: k8s01
+    app.kubernetes.io/monitoring-instance: {{ globals.monitoringInstance }}
     probe: website
-  name: generic-website-prober2
+  name: {{ globals.proberResourceName }}
 spec:
-  interval: 60s
+  interval: {{ globals.interval }}
   prober:
-    url: prometheus-blackbox-exporter.witcom-operations:9115
+    url: {{ globals.proberUrl }}
   targets:
     staticConfig:
       labels:
@@ -55,6 +55,15 @@ spec:
         - target
         targetLabel: __param_target
       static:
-      - a-funny-module@an-external-prober@witcom-exchange@wit-ex01-12r2@devops-team@url1
-      - a-funny-module@an-external-prober@witcom-exchange@wit-ex01-12r2@devops-team@url2
-      - http_ssl_2xx@an-external-prober@witcom-iam@witcom-iam@devops-team@https://auth.witcom.services
+{%- for probe in websites | default([]) %}
+{%- if probe.instance -%}
+  {%- set probeName = "web-" + probe.job + "-" + probe.instance -%}
+  {%- set instanceName = probe.instance -%}
+{%- else -%}
+  {%- set probeName = "web-" + probe.job -%}
+  {%- set instanceName = probe.job -%}
+{%- endif %}
+{%- for target in probe.targets | default([]) %}
+      - {{ probe.module | default(globals.module) }}@{{ globals.proberId }}@{{ probe.job }}@{{ instanceName }}@{{probe.team | default(globals.team) }}@{{ target }}
+{%- endfor %}
+{%- endfor %}
